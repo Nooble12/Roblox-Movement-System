@@ -6,7 +6,7 @@ A simple movement system that currently features "wall mantle / climb."
   2) Paste "MovementSystem.lua" code into the local script.
 3) Create a script in the "ServerScriptService" folder.
   4) Paste the "ServerTweenScript.lua" code into the script.
-5) Avatar scale settings must be 100% / Roblox settings.
+5) Avatar scale settings must be 100% / default Roblox scale settings.
 6) Run the game.
 
 # Current Features
