@@ -1,6 +1,9 @@
 # Roblox Movement System
 A simple movement system that currently features "wall mantle / climb."
 
+# Current Movement Systems
+1) Wall mantle / climb. Players can climb walls that are too tall to be jumped over / on. Works similarly to a wall mantle in FPS games.
+
 # Wall Mantle Demo
 https://github.com/user-attachments/assets/d4f540a5-7188-40b1-b1f2-860668c0eafc
 
@@ -18,6 +21,3 @@ Scripts under the Local_Scripts are optional and feel free to pick which system 
 ## Installing Remote Events
 Create and name the following Remote Events under the Roblox Studio "ReplicatedStorage" folder. Feel free to find and remove remote events that are not being used by certain MovementSystems, or just install all of them. 
 1) TweenClimb 
-
-# Current Movement Systems
-1) Wall mantle / climb. Players can climb walls that are too tall to be jumped over / on. Works similarly to a wall mantle in FPS games.
