@@ -2,7 +2,7 @@
 - Wall Mantle Movement System
 - author Nooble12 (Github) or Noble536 (Roblox)
 - since 12/28/25
-- version 1.1.0
+- version 1.1.1
 - github https://github.com/Nooble12/Roblox-Movement-System
 ]]
 
@@ -95,8 +95,8 @@ function GetRayDistance(resultRay, origin)
 end
 
 --Sends a signal to the server to tween the player
-function TweenPlayer(hrp, hrpRaycastResult, climbTime)
-	ReplicatedStorage.TweenClimb:FireServer(hrp, hrpRaycastResult.Position, climbTime)
+function TweenPlayer(hrp, hrpRotation, hrpRaycastResult, climbTime)
+	ReplicatedStorage.TweenClimb:FireServer(hrp, hrpRotation, hrpRaycastResult.Position, climbTime)
 end
 
 --Helper function that runs the animation and tweens the player
@@ -125,7 +125,7 @@ function ClimbWall(hrpRaycastResult)
 	local lastRaycastResult = raycastTable[#raycastTable] -- Will tween the player to the last raycast result to find the edge of the wall
 	
 	if (lastRaycastResult) then
-		TweenPlayer(hrp, lastRaycastResult, climbTime)
+		TweenPlayer(hrp, hrp.CFrame.Rotation, lastRaycastResult, climbTime)
 		PlayClimbAnimation()
 	end
 	
