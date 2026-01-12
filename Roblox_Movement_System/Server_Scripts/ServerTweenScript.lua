@@ -1,33 +1,74 @@
 --[[
-- Wall Mantle Movement System
+- WarBlox Movement System
 - author Nooble12 (Github) or Noble536 (Roblox)
 - since 12/28/25
-- version 1.1.1
+- version 1.1.0
 - github https://github.com/Nooble12/Roblox-Movement-System
+- This server script handles the physics-related parts of the WarBlox movement system.
 ]]
 
-local TweenService = game:GetService("TweenService")
+--Includes
+local Debris = game:GetService("Debris")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PlayerTweenFunctions = require(ReplicatedStorage.ModuleScripts.PlayerPositionTween)
+local TweenPlayerAppeance = require(ReplicatedStorage.ModuleScripts.TweenPlayerAppearance)
 
-game.ReplicatedStorage.TweenClimb.OnServerEvent:Connect(function(player, hrp, hrpRotation, hrpRaycastResultPosition, climbTime)
-	TweenPlayer(hrp, hrpRotation, hrpRaycastResultPosition, climbTime)
+game.ReplicatedStorage.BulletSling.OnServerEvent:Connect(function(player, hrp, hrpRotation, slingResult, cameraLookVector, isHitWall)
+	
+	if (player.IsSlinging.Value == true) then
+		return
+	end
+	
+	player.IsSlinging.Value = true
+	
+	local hrp = player.Character:WaitForChild("HumanoidRootPart")
+	local originalHrpPosition = hrp.Position
+	
+	ApplySlingEffects(player, hrp)
+	TweenPlayerAppeance.HidePlayer(player)
+	
+	local tweenTime = 0.5 -- seconds
+	
+	PlayerTweenFunctions.TweenPlayer(hrp, hrp.CFrame.Rotation, slingResult, tweenTime, Enum.EasingStyle.Linear)
+	
+	-- Only carry the velocity over if not hit wall
+	if (not isHitWall) then
+		-- speed = distance / time
+		local velocity = (originalHrpPosition - slingResult) / tweenTime
+		local linearVelocity = Instance.new("LinearVelocity", hrp)
+		linearVelocity.Attachment0 = hrp.RootAttachment
+		linearVelocity.VectorVelocity = (slingResult - originalHrpPosition).Unit * velocity.Magnitude
+		linearVelocity.MaxForce = math.huge
+		Debris:AddItem(linearVelocity, 0.01)
+	end
+	
+	player.IsSlinging.Value = false
+	TweenPlayerAppeance.ShowPlayer(player)
 end)
 
-function TweenPlayer(hrp, hrpRotation, hrpRaycastResultPosition, climbTime)
-	local info = TweenInfo.new( 
-		climbTime, 
-		Enum.EasingStyle.Sine,
-		Enum.EasingDirection.InOut,
-		0,
-		false 
-	) 
+game.ReplicatedStorage.Run.OnServerEvent:Connect(function(player, isRunning)
+	local character = player.Character
+	local humanoid = character:WaitForChild("Humanoid")
+	local defaultWalkSpeed = 16 -- studs per second
+	
+	if(isRunning) then
+		print(player.Name .. " stopped running.")
+		humanoid.WalkSpeed = defaultWalkSpeed
+		else
+		print(player.Name .. " is now running.")
+		humanoid.WalkSpeed = defaultWalkSpeed * 2
+	end
+end)
 
-	local goal = {
-		CFrame = CFrame.new(hrpRaycastResultPosition.X, hrpRaycastResultPosition.Y + 2.5, hrpRaycastResultPosition.Z) * hrpRotation
-	}
-
-	local tween = TweenService:Create(hrp, info, goal)
-	hrp.Anchored = true
-	tween:Play()
-	tween.Completed:Wait()
-	hrp.Anchored = false
+function ApplySlingEffects(player, hrp)
+	TweenPlayerAppeance.ApplySlingEffect(player, hrp)
 end
+
+--Keeps track if the player is slinging
+game:GetService("Players").PlayerAdded:Connect(function(player)
+	local isSlingTag = Instance.new("BoolValue", player)
+	isSlingTag.Name = "IsSlinging"
+	isSlingTag.Value = false
+end)
+
+
